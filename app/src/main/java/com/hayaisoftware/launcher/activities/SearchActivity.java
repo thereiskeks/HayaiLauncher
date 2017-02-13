@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -100,7 +101,7 @@ public class SearchActivity extends Activity
     /**
      *  Contains the activities that will get drawn.
      */
-    private ArrayList<LaunchableActivity> mActivityInfos;
+    private ArrayList<LaunchableActivity> mVisibleActivityInfos;
     private ArrayList<LaunchableActivity> mShareableActivityInfos;
     private Trie<LaunchableActivity> mTrie;
     private ArrayAdapter<LaunchableActivity> mArrayAdapter;
@@ -172,13 +173,14 @@ public class SearchActivity extends Activity
 
         final Resources resources = getResources();
 
-        //fields:
         mLaunchableActivityPackageNameHashMap = new HashMap<>();
         mShareableActivityInfos = new ArrayList<>(sInitialArrayListSize);
-        mActivityInfos = new ArrayList<>(sInitialArrayListSize);
+        mVisibleActivityInfos = new ArrayList<>(sInitialArrayListSize);
         mTrie = new Trie<>();
         mWordSinceLastSpaceBuilder = new StringBuilder(64);
         mWordSinceLastCapitalBuilder = new StringBuilder(64);
+
+
 
         mSearchEditText = (EditText) findViewById(R.id.editText1);
         mAppListView = (GridView) findViewById(R.id.appsContainer);
@@ -215,7 +217,6 @@ public class SearchActivity extends Activity
                 android.R.mipmap.sym_def_app_icon);
         mIconSizePixels = resources.getDimensionPixelSize(R.dimen.app_icon_size);
 
-
         mPinToTopComparator = new PinToTop();
         mRecentOrderComparator = new RecentOrder();
         mAlphabeticalOrderComparator = new AlphabeticalOrder();
@@ -243,7 +244,6 @@ public class SearchActivity extends Activity
 
 
         loadLaunchableApps();
-
         //loadShareableApps();
         setupImageLoadingThreads(resources);
         setupViews();
@@ -367,7 +367,7 @@ public class SearchActivity extends Activity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position >= mColumnCount) {
-                    launchActivity(mActivityInfos.get(position - mColumnCount));
+                    launchActivity(mVisibleActivityInfos.get(position - mColumnCount));
                 }
             }
 
@@ -377,8 +377,8 @@ public class SearchActivity extends Activity
     }
 
     private boolean openFirstActivity() {
-        if (!mActivityInfos.isEmpty()) {
-            launchActivity(mActivityInfos.get(0));
+        if (!mVisibleActivityInfos.isEmpty()) {
+            launchActivity(mVisibleActivityInfos.get(0));
             return true;
         }
         return false;
@@ -408,7 +408,7 @@ public class SearchActivity extends Activity
 
         mImageLoadingConsumersManager =
                 new SimpleTaskConsumerManager(getOptimalNumberOfThreads(resources),
-                        mActivityInfos.size());
+                        mVisibleActivityInfos.size());
         mImageTasksSharedData = new ImageLoadingTask.SharedData(this, mPm, mContext, mIconSizePixels);
     }
 
@@ -501,25 +501,25 @@ public class SearchActivity extends Activity
         final HashSet<LaunchableActivity> infoList =
                 mTrie.getAllStartingWith(stripAccents(mSearchEditText.getText()
                         .toString().toLowerCase().trim()));
-        mActivityInfos.clear();
-        mActivityInfos.addAll(infoList);
-        mActivityInfos.addAll(mShareableActivityInfos);
+        mVisibleActivityInfos.clear();
+        mVisibleActivityInfos.addAll(infoList);
+        mVisibleActivityInfos.addAll(mShareableActivityInfos);
         sortApps();
-        Log.d("DEBUG_SEARCH", mActivityInfos.size() + "");
+        Log.d("DEBUG_SEARCH", mVisibleActivityInfos.size() + "");
 
         mArrayAdapter.notifyDataSetChanged();
     }
 
     private void sortApps() {
-        Collections.sort(mActivityInfos, mAlphabeticalOrderComparator);
+        Collections.sort(mVisibleActivityInfos, mAlphabeticalOrderComparator);
 
         if (mShouldOrderByRecents) {
-            Collections.sort(mActivityInfos, mRecentOrderComparator);
+            Collections.sort(mVisibleActivityInfos, mRecentOrderComparator);
         } else if(mShouldOrderByUsages) {
-            Collections.sort(mActivityInfos, mUsageOrderComparator);
+            Collections.sort(mVisibleActivityInfos, mUsageOrderComparator);
         }
 
-        Collections.sort(mActivityInfos, mPinToTopComparator);
+        Collections.sort(mVisibleActivityInfos, mPinToTopComparator);
     }
 
     private void removeActivitiesFromPackage(String packageName) {
@@ -538,7 +538,7 @@ public class SearchActivity extends Activity
             for (String subword : subwords) {
                 mTrie.remove(subword, launchableActivityToRemove);
             }
-            if (mActivityInfos.remove(launchableActivityToRemove))
+            if (mVisibleActivityInfos.remove(launchableActivityToRemove))
                 activityListChanged = true;
             //TODO DEBUGME if uncommented the next line causes a crash.
             //mLaunchableActivityPrefs.deletePreference(className);
@@ -561,16 +561,35 @@ public class SearchActivity extends Activity
     private String stripAccents(final String s) {
         return mPattern.matcher(Normalizer.normalize(s, Normalizer.Form.NFKD)).replaceAll("");
     }
-    void intersectionSet(ArrayList<ResolveInfo> newLoaded)
+    boolean LaunchableActivityAlreadyLoaded(String label)
     {
+        for (LaunchableActivity info : mVisibleActivityInfos)
+        {
+            if(info.getActivityLabel()==label)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    void intersectionSet(List<ResolveInfo> newLoaded)
+    {
+        for(ResolveInfo info : newLoaded)
+        {
+            //if(LaunchableActivityAlreadyLoaded(info.))
+        }
         // TODO: hier filtern welche neu sind und welche entfernt werden muessen
     }
     public void loadLaunchableApps() {
 
         List<ResolveInfo> infoList = ContentShare.getLaunchableResolveInfos(mPm);
+        // TODO: man muss wohl schnittmenge ueber activityinfos erstellen
+        // ...aber man muss kucken ob die referenzen gleich sind
         mArrayAdapter = new ActivityInfoArrayAdapter(this,
-                R.layout.app_grid_item, mActivityInfos);
+                R.layout.app_grid_item, mVisibleActivityInfos);
         ArrayList<LaunchableActivity> launchablesFromResolve = new ArrayList<>(infoList.size());
+
+        intersectionSet(infoList);
 
         if (mNumOfCores <= 1) {
             for (ResolveInfo info : infoList) {
@@ -639,7 +658,6 @@ public class SearchActivity extends Activity
         }
     }
     public void handlePackageChanged() {
-
         // read list of changed packages
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
         final String[] packageChangedNames = mSharedPreferences.getString("package_changed_name", "")
@@ -717,7 +735,7 @@ public class SearchActivity extends Activity
 
     private void clearCaches() {
         mIsCacheClear = true;
-        for (LaunchableActivity launchableActivity : mActivityInfos) {
+        for (LaunchableActivity launchableActivity : mVisibleActivityInfos) {
             launchableActivity.deleteActivityIcon();
         }
     }
@@ -809,10 +827,10 @@ public class SearchActivity extends Activity
 
     }
 
+
+
     public void onClickSettingsButton(View view) {
         showPopup(mOverflowButtonTopleft);
-
-
     }
 
     public void launchActivity(final LaunchableActivity launchableActivity) {
@@ -840,14 +858,14 @@ public class SearchActivity extends Activity
         mSearchEditText.setText("");
     }
 
-    class PopupEventListener implements PopupMenu.OnMenuItemClickListener {
+    private class PopupEventListener implements PopupMenu.OnMenuItemClickListener {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             return onOptionsItemSelected(item);
         }
     }
 
-    class ActivityInfoArrayAdapter extends ArrayAdapter<LaunchableActivity> {
+    private class ActivityInfoArrayAdapter extends ArrayAdapter<LaunchableActivity> {
         final LayoutInflater inflater;
 
         public ActivityInfoArrayAdapter(final Context context, final int resource,
