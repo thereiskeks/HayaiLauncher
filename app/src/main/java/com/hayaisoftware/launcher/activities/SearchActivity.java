@@ -96,6 +96,10 @@ public class SearchActivity extends Activity
 
     private final Pattern mPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
     private int mStatusBarHeight;
+
+    /**
+     *  Contains the activities that will get drawn.
+     */
     private ArrayList<LaunchableActivity> mActivityInfos;
     private ArrayList<LaunchableActivity> mShareableActivityInfos;
     private Trie<LaunchableActivity> mTrie;
@@ -234,7 +238,6 @@ public class SearchActivity extends Activity
         final IntentFilter sdCradFilter = new IntentFilter();
         sdCradFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
         sdCradFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
-        sdCradFilter.addDataScheme("package");
         mSdCardChangedReceiver = new SdCardMountedReceivver(this);
         registerReceiver(mSdCardChangedReceiver, sdCradFilter);
 
@@ -558,7 +561,10 @@ public class SearchActivity extends Activity
     private String stripAccents(final String s) {
         return mPattern.matcher(Normalizer.normalize(s, Normalizer.Form.NFKD)).replaceAll("");
     }
-
+    void intersectionSet(ArrayList<ResolveInfo> newLoaded)
+    {
+        // TODO: hier filtern welche neu sind und welche entfernt werden muessen
+    }
     public void loadLaunchableApps() {
 
         List<ResolveInfo> infoList = ContentShare.getLaunchableResolveInfos(mPm);
@@ -599,7 +605,42 @@ public class SearchActivity extends Activity
         mInputMethodManager.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), 0);
     }
 
-    private void handlePackageChanged() {
+    public void handlePackageChanged(String packageName)
+    {
+        packageName = packageName.trim();
+
+        if (packageName.isEmpty()) return;
+
+        final Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setPackage(packageName);
+        Log.d("SearchActivity", "changed: " + packageName);
+        final List<ResolveInfo> infoList = mPm.queryIntentActivities(intent, 0);
+
+        //we don't actually need to run removeActivitiesFromPackage if the package
+        // is being installed
+        removeActivitiesFromPackage(packageName);
+        // TODO: so entfernt man apps
+
+        if (infoList.isEmpty()) {
+            Log.d("SearchActivity", "No activities in list. Uninstall detected!");
+            updateVisibleApps();
+        } else {
+            // TODO: so werden neue apps hinzugefuegt
+            Log.d("SearchActivity", "Activities in list. Install/update detected!");
+            ArrayList<LaunchableActivity> launchablesFromResolve = new ArrayList<>(infoList.size());
+            for (ResolveInfo info : infoList) {
+                final LaunchableActivity launchableActivity = new LaunchableActivity(
+                        info.activityInfo, info.activityInfo.loadLabel(mPm).toString(), false);
+                launchablesFromResolve.add(launchableActivity);
+            }
+            updateApps(launchablesFromResolve, true);
+        }
+    }
+    public void handlePackageChanged() {
+
+        // read list of changed packages
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
         final String[] packageChangedNames = mSharedPreferences.getString("package_changed_name", "")
                 .split(" ");
@@ -607,39 +648,10 @@ public class SearchActivity extends Activity
         editor.apply();
 
         for (String packageName : packageChangedNames) {
-            packageName = packageName.trim();
-            if (packageName.isEmpty()) continue;
-
-            final Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            intent.setPackage(packageName);
-            Log.d("SearchActivity", "changed: " + packageName);
-            final List<ResolveInfo> infoList = mPm.queryIntentActivities(intent, 0);
-
-            //we don't actually need to run removeActivitiesFromPackage if the package
-            // is being installed
-            removeActivitiesFromPackage(packageName);
-
-
-            if (infoList.isEmpty()) {
-                Log.d("SearchActivity", "No activities in list. Uninstall detected!");
-                updateVisibleApps();
-            } else {
-                Log.d("SearchActivity", "Activities in list. Install/update detected!");
-                ArrayList<LaunchableActivity> launchablesFromResolve = new ArrayList<>(infoList.size());
-                for (ResolveInfo info : infoList) {
-                    final LaunchableActivity launchableActivity = new LaunchableActivity(
-                            info.activityInfo, info.activityInfo.loadLabel(mPm).toString(), false);
-                    launchablesFromResolve.add(launchableActivity);
-                }
-                updateApps(launchablesFromResolve, true);
-            }
-
+            handlePackageChanged(packageName);
         }
-
-
     }
+
 
     @Override
     public void onBackPressed() {
@@ -652,7 +664,8 @@ public class SearchActivity extends Activity
         if (mImageLoadingConsumersManager != null)
             mImageLoadingConsumersManager.destroyAllConsumers(false);
         unregisterReceiver(mPackageChangedReceiver);
-        Log.d("HayaiLauncher", "Hayai is ded");
+        unregisterReceiver(mSdCardChangedReceiver);
+        Log.d("HayaiLauncher", "Hayai is dead");
         super.onDestroy();
     }
 

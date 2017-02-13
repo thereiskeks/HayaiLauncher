@@ -48,14 +48,7 @@
             android:label="@string/title_activity_about" >
         </activity>
 
-        <receiver
-            android:name=".SdCardMountedReceivver"
-            android:enabled="true"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE" />
-            </intent-filter>
-        </receiver>
+
 
 
     </application>
