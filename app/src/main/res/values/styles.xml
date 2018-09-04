@@ -1,3 +1,18 @@
+<!--
+  ~ Copyright 2015-2017 Hayai Software
+  ~ Copyright 2018 The KeikaiLauncher Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
+  ~ either express or implied. See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
@@ -15,7 +30,7 @@
 
     </style>
 
-        <style name="AppSettingsTheme" parent="@android:style/Theme.Holo.Light">
+    <style name="AppSettingsTheme" parent="@android:style/Theme.Holo.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -23,19 +38,31 @@
         -->
         19
     </style>
-    
+
     <!-- Application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light.NoActionBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="TextSelectedList">
-	    	<item name="android:textSize">26sp</item>
-	    	<item name="android:textStyle">bold</item>
-	    	<item name="android:text">bold</item>
-		</style>
-		<style name="TextUnselectedList">
-	    	<item name="android:textSize">26sp</item>
-		</style>
-		
+    <!-- use this style for a text view that is a caption to a paragraph of text -->
+    <style name="CaptionTextBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Medium
+        </item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="CaptionText" parent="CaptionTextBase"/>
+
+    <!-- use this style for a text views that is a paragraph of text -->
+    <style name="BodyTextBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
+    </style>
+
+    <style name="BodyText" parent="BodyTextBase"/>
 </resources>

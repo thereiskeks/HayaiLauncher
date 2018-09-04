@@ -1,53 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.hayaisoftware.launcher"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2015-2017 Hayai Software
+  ~ Copyright 2018 The KeikaiLauncher Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
+  ~ either express or implied. See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="22" />
+<manifest package="com.anpmech.launcher"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
-
+    <!--
+    ~ This permission completely optional and set in the system settings menus. The following
+    ~ declares intention to use, if available and granted.
+    -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions"/>
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppBaseTheme" >
+        android:resizeableActivity="true"
+        android:theme="@style/AppBaseTheme"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        tools:targetApi="n">
 
         <activity
-            android:name="com.hayaisoftware.launcher.activities.SearchActivity"
+            android:name="com.anpmech.launcher.activities.SearchActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_search"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            >
-
-
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.ASSIST"/>
 
-                <action android:name="android.intent.action.ASSIST" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                
-
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.HOME"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
         <activity
-            android:name="com.hayaisoftware.launcher.activities.SettingsActivity"
+            android:name="com.anpmech.launcher.activities.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppSettingsTheme" >
-        </activity>
+            android:theme="@style/AppSettingsTheme"/>
+
         <activity
-            android:name="com.hayaisoftware.launcher.activities.AboutActivity"
-            android:theme="@style/AppSettingsTheme"
-            android:label="@string/title_activity_about" >
-        </activity>
+            android:name=".activities.AboutActivity"
+            android:label="@string/about_header"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog"/>
+
+        <receiver
+            android:name=".monitor.PackageChangedReceiver"
+            android:enabled="false"/>
     </application>
-
-
 </manifest>

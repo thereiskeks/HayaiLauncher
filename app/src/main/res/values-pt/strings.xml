@@ -1,50 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2015-2017 Hayai Software
+  ~ Copyright 2018 The KeikaiLauncher Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the
+  ~ License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
+  ~ either express or implied. See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 
+<resources>
     <string name="action_settings">Configurações</string>
     <string name="application_icon_desc">Ícone do Aplicativo</string>
     <string name="search_view_hint">Digite algo…</string>
-	<string name="title_activity_settings">Configurações</string>
-    <string name="settings_enable_notification_title">Exibir atalho no painel de notificações</string>
-    <string name="application_icon_content_description">Ícone do aplicativo</string>
+    <string name="title_activity_settings">Configurações</string>
+    <string name="settings_enable_notification_title">Exibir atalho no painel de notificações
+    </string>
     <string name="appmenu_launch">Executar</string>
-    <string name="appmenu_favorite">Favorito</string>
     <string name="appmenu_info">Informações do aplicativo</string>
-    <string name="app_item_bottom_never">Nunca executado</string>
-    <string name="settings_enable_icons_title">Mostrar icones</string>
-    <string name="action_refresh_app_list">Atualizar lista de apps</string>
     <string name="action_about">Sobre</string>
     <string name="action_system_settings">Ajustes do dispositivo</string>
     <string name="activity_not_found">Atividade não encontrada.</string>
-    <string name="title_activity_about">Sobre</string><string name="about_content">Hayai Launcher [APP_VERSION]
-\n
-\nWebsite do projeto:
-\nhttps://github.com/seizonsenryaku/HayaiLauncher
-\n
-\nContribuidores:
-\n\tEdgar Villani Peres (seizonsenryaku)
-\n\tDalton de Oliveira Silva(daltonos)
-\n
-\n-
-\n
-\n Copyright 2015 Hayai Software
-\n
-\n Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-\n You may obtain a copy of the License at
-\n
-\n http://www.apache.org/licenses/LICENSE-2.0
-\n
-\n Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-\n See the License for the specific language governing permissions and
-\n limitations under the License.
-\n</string>
     <string name="action_manage_apps">Gerenciar apps</string>
     <string name="appmenu_onplaystore">Abrir na loja de aplicativos</string>
     <string name="launch">Abrir</string>
-    <string name="pref_basetheme">Tema Base</string>
     <string name="pref_notification_priority">Prioridade da notificação</string>
     <string name="settings_category_notification_category">Notificações</string>
     <string name="settings_autokeyboard">Abrir teclado automaticamente</string>
@@ -54,6 +37,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     <string name="pref_notification_priority_entries_low">Baixa (sem ícone)</string>
     <string name="settings_disable_icon_loading">Desabilitar carregamento de icones</string>
     <string name="pref_preferred_app_order_dialog">Ordem dos aplicativos</string>
-    <string name="pref_preferred_order_dialog">Ordem dos aplicativos</string>
     <string name="action_set_wallpaper">Trocar papel de parede</string>
 </resources>
