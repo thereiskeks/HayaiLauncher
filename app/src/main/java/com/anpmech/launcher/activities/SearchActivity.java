@@ -666,6 +666,7 @@ public class SearchActivity extends Activity
                 !isInMultiWindowMode();
         final boolean transparentPossible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
+        /*
         if (transparentPossible && noMultiWindow) {
             masterLayout.setFitsSystemWindows(false);
             final int navBarWidth = getNavigationBarWidth(resources);
@@ -681,6 +682,7 @@ public class SearchActivity extends Activity
             masterLayout.setFitsSystemWindows(true);
             appContainer.setPadding(0, appTop, 0, 0);
         }
+        */
     }
 
     private void setupPreferences() {
