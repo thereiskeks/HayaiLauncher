@@ -542,14 +542,14 @@ public class SearchActivity extends Activity
         }
 
         if (prefs.isRotationAllowed()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
             setupPadding();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 registerDisplayListener();
             }
         } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+            //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         }
     }
 
